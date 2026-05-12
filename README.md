@@ -13,6 +13,7 @@ Script de rotación de pantallas para TV usando Playwright y Google Chrome en mo
 - [main_v2.py](./main_v2.py): abre las URLs y rota entre pestañas.
 - [requirements.txt](./requirements.txt): dependencias de Python.
 - [run_tv_rotator.cmd](./run_tv_rotator.cmd): wrapper para ejecutar desde el Programador de tareas.
+- [create_scheduler_task.ps1](./create_scheduler_task.ps1): crea o actualiza la tarea programada en Windows.
 
 ## Instalación
 
@@ -93,6 +94,25 @@ Para detenerlo:
 Usar el archivo:
 
 - [run_tv_rotator.cmd](./run_tv_rotator.cmd)
+- [create_scheduler_task.ps1](./create_scheduler_task.ps1)
+
+### Opción automática
+
+Ejecutar en PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\create_scheduler_task.ps1
+```
+
+Esto crea o actualiza una tarea llamada `TVS Rotator` que:
+
+- se ejecuta al iniciar sesión
+- lanza `run_tv_rotator.cmd`
+- usa `C:\prg\VACLOG\TVS` como carpeta de trabajo
+- ignora inicios duplicados si ya está corriendo
+- intenta reiniciar hasta 3 veces si falla
+
+### Opción manual
 
 Configuración recomendada de la tarea:
 
