@@ -68,10 +68,19 @@ El intervalo de rotación por defecto es de 45 segundos.
 
 Si querés cambiarlo sin editar el código, podés definir la variable de entorno `TV_ROTATION_INTERVAL`.
 
+El zoom de la primera URL (`tablero_tv.php`) también se puede configurar con `TV_FIRST_PAGE_ZOOM`.
+En el wrapper [run_tv_rotator.cmd](./run_tv_rotator.cmd) ya quedaron ambas variables listas para editar:
+
+```cmd
+set "TV_ROTATION_INTERVAL=45"
+set "TV_FIRST_PAGE_ZOOM=0.7"
+```
+
 Ejemplo:
 
 ```powershell
 $env:TV_ROTATION_INTERVAL = "30"
+$env:TV_FIRST_PAGE_ZOOM = "0.8"
 python main_v2.py
 ```
 

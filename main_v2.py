@@ -15,6 +15,7 @@ URLS = [
 ]
 DEFAULT_INTERVAL_SECONDS = 45
 PAGE_LOAD_TIMEOUT_MS = 30_000
+DEFAULT_FIRST_PAGE_ZOOM = 0.7
 BROWSER_ARGS = [
     "--kiosk",
     "--start-fullscreen",
@@ -41,6 +42,19 @@ def get_interval_seconds() -> int:
     return interval
 
 
+def get_first_page_zoom() -> float:
+    raw_value = os.getenv("TV_FIRST_PAGE_ZOOM", str(DEFAULT_FIRST_PAGE_ZOOM))
+    try:
+        zoom = float(raw_value)
+    except ValueError as exc:
+        raise ValueError("TV_FIRST_PAGE_ZOOM debe ser un numero positivo.") from exc
+
+    if zoom <= 0:
+        raise ValueError("TV_FIRST_PAGE_ZOOM debe ser mayor que 0.")
+
+    return zoom
+
+
 def install_signal_handlers(stop_callback) -> None:
     def handle_stop(signum, _frame):
         print(f"Senal recibida ({signum}). Cerrando navegador...", flush=True)
@@ -52,10 +66,13 @@ def install_signal_handlers(stop_callback) -> None:
 
 
 def open_pages(context, urls: list[str]):
+    first_page_zoom = get_first_page_zoom()
     pages = []
     for index, url in enumerate(urls):
         page = context.new_page()
         page.goto(url, wait_until="domcontentloaded", timeout=PAGE_LOAD_TIMEOUT_MS)
+        if index == 0:
+            apply_zoom(page, first_page_zoom)
         enforce_fullscreen(page)
         pages.append(page)
         if index == 0:
@@ -63,6 +80,17 @@ def open_pages(context, urls: list[str]):
         else:
             print(f"Pagina adicional cargada: {url}", flush=True)
     return pages
+
+
+def apply_zoom(page, zoom_factor: float) -> None:
+    page.evaluate(
+        """
+        (zoom) => {
+            document.documentElement.style.zoom = String(zoom);
+        }
+        """,
+        zoom_factor,
+    )
 
 
 def enforce_fullscreen(page) -> None:
